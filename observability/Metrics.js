@@ -55,9 +55,12 @@ function createMetrics(core, defaultTags = {}) {
 
         const k = String(statusCode);
         core.http.statusCodeBreakdown.set(k, (core.http.statusCodeBreakdown.get(k) || 0) + 1);
-        core.http.statusCodeBreakdown.set(statusCode, (core.http.statusCodeBreakdown.get(statusCode) || 0) + 1);
 
         if (attempt > 1) core.http.retries++;
+    }
+
+    function incrementRedirects() {
+        core.http.redirects++;
     }
 
     function toSummary(extra = {}) {
@@ -85,6 +88,7 @@ function createMetrics(core, defaultTags = {}) {
         inc,
         observeLatency,
         recordHttp,
+        incrementRedirects,
         toSummary,
         child: (moreTags = {}) => createMetrics(core, { ...defaultTags, ...moreTags }),
     };

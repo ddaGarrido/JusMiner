@@ -22,8 +22,16 @@ export class HttpSession {
         const cookies = Array.isArray(setCookie) ? setCookie : [setCookie];
         for (const cookie of cookies) {
             const [pair] = cookie.split(';');
-            const [key, value] = pair.split('=');
-            this.cookies.set(key.trim(), value.trim());
+            const equalIndex = pair.indexOf('=');
+            if (equalIndex === -1) {
+                // Malformed cookie - no '=' found, skip it
+                continue;
+            }
+            const key = pair.substring(0, equalIndex).trim();
+            const value = pair.substring(equalIndex + 1).trim();
+            if (key && value !== undefined) {
+                this.cookies.set(key, value);
+            }
         }
     }
 }
