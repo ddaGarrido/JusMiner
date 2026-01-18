@@ -146,25 +146,11 @@ async function main() {
     });
 
     try {
-        // Initialize HTTP client
-        const httpClient = new HttpClient(
-            BASE_URL,
-            {
-                maxRetries: 3,
-                retryDelayMs: 1000,
-                connectTimeout: 30000,
-                requestTimeout: 60000
-            },
-            rootLogger,
-            rootMetrics,
-            context
-        );
-
         // Execute flow
         const flowResults = await executeJurisprudSearchFlow({
-            httpClient,
             logger: rootLogger,
             metrics: rootMetrics,
+            context: context,
             searchTerm: config.searchTerm,
             filter: config.filter,
             maxResults: config.maxResults,

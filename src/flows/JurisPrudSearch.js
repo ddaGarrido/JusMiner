@@ -1,3 +1,4 @@
+import { HttpClient } from '../http/HttpClient.js';
 import { parseHomePage } from '../parsers/HomePage.js';
 import { parseSearchResultsPage } from '../parsers/SearchResultsPage.js';
 import { parseCaseDetailPage, parseInteiroTeorPage } from '../parsers/CaseDetailPage.js';
@@ -12,7 +13,6 @@ const BASE_URL = 'https://www.jusbrasil.com.br';
 /**
  * Main flow: Search for jurisprudencia and collect details
  * @param {Object} params - Flow parameters
- * @param {HttpClient} params.httpClient - HTTP client instance
  * @param {Object} params.logger - Logger instance
  * @param {Object} params.metrics - Metrics instance
  * @param {string} params.searchTerm - Search term
@@ -22,9 +22,9 @@ const BASE_URL = 'https://www.jusbrasil.com.br';
  * @returns {Promise<Object>} - Flow results
  */
 export async function executeJurisprudSearchFlow({
-    httpClient,
     logger,
     metrics,
+    context,
     searchTerm,
     filter = 'jurisprudencia',
     maxResults,
@@ -32,6 +32,13 @@ export async function executeJurisprudSearchFlow({
 }) {
     const flowLogger = logger.child({ component: 'JurisprudSearchFlow' });
     const flowMetrics = metrics.child({ component: 'JurisprudSearchFlow' });
+
+    const httpClient = new HttpClient(BASE_URL, {
+        maxRetries: 3,
+        retryDelayMs: 1000,
+        connectTimeout: 30000,
+        requestTimeout: 60000
+    }, flowLogger, flowMetrics, context);
 
     const results = {
         searchResults: [],
@@ -51,7 +58,7 @@ export async function executeJurisprudSearchFlow({
         const homeResponse = await httpClient.get('/', getBrowserHeaders(), { stage: 'home' });
 
         // Check for blocking
-        handleBlocked(homeResponse, results, 'home');
+        handleBlocked(homeResponse, results, flowLogger, 'home');
 
         const homeData = parseHomePage(homeResponse.text());
         if (!homeData.pesquisaJuridicaUrl) {
@@ -64,7 +71,7 @@ export async function executeJurisprudSearchFlow({
         const pesquisaResponse = await httpClient.get(pesquisaUrl, getBrowserHeaders(BASE_URL), { stage: 'pesquisa-juridica' });
 
         // Check for blocking on pesquisa juridica page
-        handleBlocked(pesquisaResponse, results, 'pesquisa-juridica');
+        handleBlocked(pesquisaResponse, results, flowLogger, 'pesquisa-juridica');
 
         // Step 3: Perform search
         const searchPath = filter === 'jurisprudencia'
@@ -76,7 +83,7 @@ export async function executeJurisprudSearchFlow({
         const searchResponse = await httpClient.get(searchPath, getBrowserHeaders(`${BASE_URL}${pesquisaUrl}`), { stage: 'search' });
 
         // Check for blocking on search
-        handleBlocked(searchResponse, results, 'search');
+        handleBlocked(searchResponse, results, flowLogger, 'search');
 
         const searchData = parseSearchResultsPage(searchResponse.text(), BASE_URL);
 
