@@ -1,0 +1,44 @@
+{
+    "scenarios": [
+        {
+            "name": "smoke-basic",
+            "description": "Basic smoke test to verify the search flow is working",
+            "searchTerm": "direito penal",
+            "filter": "jurisprudencia",
+            "maxResults": 1,
+            "maxDetails": 1,
+            "expectedResults": 1,
+            "expectedDetails": 1
+        },
+        {
+            "name": "smoke-basic-5",
+            "description": "Basic smoke test to verify the search flow is working with 5 results and 5 details",
+            "searchTerm": "direito penal",
+            "filter": "jurisprudencia",
+            "maxResults": 5,
+            "maxDetails": 5,
+            "expectedResults": 5,
+            "expectedDetails": 5
+        },
+        {
+            "name": "smoke-basic-10",
+            "description": "Basic smoke test to verify the search flow is working with 10 results and 10 details",
+            "searchTerm": "direito penal",
+            "filter": "jurisprudencia",
+            "maxResults": 10,
+            "maxDetails": 10,
+            "expectedResults": 10,
+            "expectedDetails": 10
+        },
+        {
+            "name": "smoke-basic-20",
+            "description": "Basic smoke test to verify the search flow is working with 20 results and 20 details",
+            "searchTerm": "direito penal",
+            "filter": "jurisprudencia",
+            "maxResults": 20,
+            "maxDetails": 20,
+            "expectedResults": 20,
+            "expectedDetails": 20
+        }
+    ]
+}
