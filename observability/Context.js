@@ -5,7 +5,7 @@ function createContext(overrides = {}) {
 
     return {
         runId,
-        startedAt: Date.now().toString(),
+        startedAt: new Date().toISOString(),
         nextRequestId() {
             return randomUUID();
         }

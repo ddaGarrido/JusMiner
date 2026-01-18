@@ -25,14 +25,7 @@ export class HttpClient {
         const start = Date.now();
         const effectiveMaxRetries = maxRetries ?? this.maxRetries;
 
-        if (this.lastURL) {
-            headers.referer = this.lastURL.href;
-        }
-        const mergedHeaders = {
-            ...this.session.defaultHeaders,
-            ...headers,
-            cookie: this.session.getCookieHeader()
-        };
+        const mergedHeaders = this.handleHeaders(headers);
 
         const request = new Request({
             method,
@@ -42,11 +35,10 @@ export class HttpClient {
         });
 
         let response;
-        let error;
 
         try {
             response = await this.transport.send(request);
-        } catch (err) {
+        } catch (error) {
             const elapsedMs = Date.now() - start;
             const isRetryable = this._isRetryableError(error);
             
@@ -54,8 +46,8 @@ export class HttpClient {
                 return this._handleRetry({ message: "HTTP Request Failed, Retrying", requestId, stage, attempt, maxRetries: effectiveMaxRetries, method, url, headers, body, error });
             }
             
-            this._recordFailure({ requestId, stage, attempt, method, url, elapsedMs, error: err });
-            throw err;
+            this._recordFailure({ requestId, stage, attempt, method, url, elapsedMs, error });
+            throw error;
         }
 
         const elapsedMs = Date.now() - start;
@@ -99,6 +91,8 @@ export class HttpClient {
     _isRetryableError(error) {
         // Network errors, timeouts, and connection errors are retryable
         const retryableCodes = ['ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'ECONNREFUSED', 'EAI_AGAIN'];
+        if (error === null || error.code === undefined) return false;
+
         return retryableCodes.includes(error.code) || 
                error.message?.includes('timeout') ||
                error.message?.includes('ECONN');
@@ -114,6 +108,37 @@ export class HttpClient {
 
     _sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    handleHeaders(headers = {}) {
+        if (this.lastURL) {
+            headers.referer = this.lastURL.href;
+        }
+        
+        // Build merged headers, filtering out invalid values
+        const mergedHeaders = {};
+        
+        // Add session default headers
+        for (const [key, value] of Object.entries(this.session.defaultHeaders || {})) {
+            if (value != null && value !== '') {
+                mergedHeaders[key.toLowerCase()] = String(value);
+            }
+        }
+        
+        // Add request headers (override defaults)
+        for (const [key, value] of Object.entries(headers || {})) {
+            if (value != null && value !== '') {
+                mergedHeaders[key.toLowerCase()] = String(value);
+            }
+        }
+        
+        // Add cookie header only if not empty
+        const cookieHeader = this.session.getCookieHeader();
+        if (cookieHeader && cookieHeader.trim() !== '') {
+            mergedHeaders.cookie = cookieHeader;
+        }
+
+        return mergedHeaders;
     }
 
     resolveURL(url) {
