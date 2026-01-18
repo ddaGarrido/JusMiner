@@ -5,11 +5,19 @@ function getRunDir(runId) {
 }
 
 function getLogPath(runId) {
-  return path.join(getRunDir(runId), "app.jsonl");
+  return path.join(getRunDir(runId), "app.json");
 }
 
 function getSummaryPath(runId) {
   return path.join(getRunDir(runId), "run-summary.json");
 }
 
-export { getRunDir, getLogPath, getSummaryPath };
+function getResultsPath(runId) {
+  return path.join(getRunDir(runId), "results.json");
+}
+
+function getCasesPath(runId) {
+  return path.join(getRunDir(runId), "cases.json");
+}
+
+export { getRunDir, getLogPath, getSummaryPath, getResultsPath, getCasesPath };
