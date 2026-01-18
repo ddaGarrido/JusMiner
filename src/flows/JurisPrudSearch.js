@@ -1,6 +1,6 @@
 import { parseHomePage } from '../parsers/HomePage.js';
 import { parseSearchResultsPage } from '../parsers/SearchResultsPage.js';
-import { parseCaseDetailPage } from '../parsers/CaseDetailPage.js';
+import { parseCaseDetailPage, parseInteiroTeorPage } from '../parsers/CaseDetailPage.js';
 
 /**
  * Flow orchestration for JusBrasil Jurisprudencia Search
@@ -92,75 +92,8 @@ export async function executeJurisprudSearchFlow({
 
         // Step 4: Collect details for each result (up to maxDetails)
         await retrieveCaseDetails(httpClient, results, maxDetails, flowLogger, searchUrl);
-        // const detailsToCollect = Math.min(results.stats.resultsCollected, maxDetails);
 
-        // for (let i = 0; i < detailsToCollect; i++) {
-        //     const item = results.searchResults[i];
-        //     if (!item || !item.url) {
-        //         flowLogger.warn('Skipping item without URL', { index: i });
-        //         continue;
-        //     }
-
-        //     try {
-        //         flowLogger.info('Collecting case detail', {
-        //             index: i + 1,
-        //             total: detailsToCollect,
-        //             url: item.url,
-        //             id: item.id
-        //         });
-
-        //         const detailResponse = await httpClient.get(item.url, getBrowserHeaders(searchUrl), { stage: 'detail' });
-
-        //         // Check for blocking on detail page
-        //         if (isBlocked(detailResponse)) {
-        //             flowLogger.warn('Blocked on detail page', { url: item.url, statusCode: detailResponse.status });
-        //             results.errors.push({
-        //                 stage: 'detail',
-        //                 url: item.url,
-        //                 error: `Blocked: Received ${detailResponse.status}`,
-        //                 errorCode: 'BLOCKED',
-        //                 statusCode: detailResponse.status
-        //             });
-        //             results.stats.errors++;
-        //             continue; // Skip this item but continue with others
-        //         }
-
-        //         const caseDetail = parseCaseDetailPage(detailResponse.text(), item.url);
-
-        //         // Merge data from search result if detail is missing some fields
-        //         if (!caseDetail.id && item.id) caseDetail.id = item.id;
-        //         if (!caseDetail.title && item.title) caseDetail.title = item.title;
-        //         if (!caseDetail.url) caseDetail.url = item.url;
-
-        //         caseDetail.validate();
-        //         results.caseDetails.push(caseDetail);
-        //         results.stats.detailsCollected++;
-
-        //         flowLogger.info('Case detail collected', {
-        //             id: caseDetail.id,
-        //             title: caseDetail.title?.substring(0, 10),
-        //             missingFields: caseDetail.extractionMeta.missingFields.length,
-        //             blocked: caseDetail.extractionMeta.blocked
-        //         });
-
-        //         // Small delay between requests to be respectful
-        //         await new Promise(resolve => setTimeout(resolve, 500));
-
-        //     } catch (error) {
-        //         results.errors.push({
-        //             stage: 'detail',
-        //             url: item.url,
-        //             error: error.message,
-        //             errorCode: error.code
-        //         });
-        //         results.stats.errors++;
-        //         flowLogger.error('Error collecting case detail', {
-        //             url: item.url,
-        //             error: error.message,
-        //             errorCode: error.code
-        //         });
-        //     }
-        // }
+        // Step 5 Collect Inteiro Teor for each detail
 
         flowLogger.info('Flow completed', {
             totalResults: results.stats.totalResultsFound,
@@ -211,6 +144,13 @@ async function retrieveCaseDetails(httpClient, results, maxDetails, flowLogger, 
             }
 
             const caseDetail = parseCaseDetailPage(detailResponse.text(), item.url);
+
+            const inteiroTeorResponse = await httpClient.get(caseDetail.inteiroTeorUrl, getBrowserHeaders(caseDetail.url), { stage: 'inteiro-teor' });
+
+            if (!handleBlocked(inteiroTeorResponse, results, flowLogger, 'inteiro-teor', true)) {
+                caseDetail.inteiroTeorText = parseInteiroTeorPage(inteiroTeorResponse.text());
+            }
+
 
             // Merge data from search result if detail is missing some fields
             if (!caseDetail.id && item.id) caseDetail.id = item.id;

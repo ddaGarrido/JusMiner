@@ -13,6 +13,7 @@ export function parseCaseDetailPage(html, url) {
     // Extract Data from HTML
     try {
         extractIdFromUrl(detail,url);
+        detail.inteiroTeorUrl = $(`a[href*="inteiro-teor"]`).attr('href');
 
         extractTitle(detail, $);
 
@@ -81,10 +82,6 @@ function extractProcesso(detail, $, sidebar) {
 } 
 
 function extractOrgaoJulgador(detail, $, sidebar) {
-    // const orgaoJulgadorLabel = extractIfExistsFromSidebar(sidebar, 'div.detail_root__1NEI2 > h3:contains("Órgão Julgador"), div[data-fds-detail-value="true"]');
-
-    // if (orgaoJulgadorLabel) detail.orgaoJulgador = orgaoJulgadorLabel.text().trim();
-    // else markAsMissing(detail, 'orgaoJulgador','Órgão Julgador not found');
     const orgaoJulgador = extractSidebarDetailValue($, sidebar, 'Órgão Julgador');
     if (orgaoJulgador) detail.orgaoJulgador = orgaoJulgador;
     else markAsMissing(detail, 'orgaoJulgador','Órgão Julgador not found');
@@ -190,4 +187,15 @@ function extractResumo(detail, $) {
     const content = resumo.find('p').text().length;
 
     detail.resumoText = title + ' - ' + content;
+}
+
+export function parseInteiroTeorPage(html) {
+    const $ = cheerio.load(html);
+    
+    const inteiroTeorContent = extractIfExists($, 'div[data-text-from-component="docview/JurisDocument"]');
+
+    const title = inteiroTeorContent.find('h2').text().trim();
+    const content = inteiroTeorContent.find('p').text().length;
+
+    return title + ' - ' + content;
 }

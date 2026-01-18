@@ -12,6 +12,7 @@ export class CaseDetail {
         dataJulgamento = null,
         relator = null,
         resumoText = null,
+        inteiroTeorUrl = null,
         inteiroTeorText = null,
         ementa = null,
         anexos = [],
@@ -32,6 +33,7 @@ export class CaseDetail {
         this.dataJulgamento = dataJulgamento;
         this.relator = relator;
         this.resumoText = resumoText;
+        this.inteiroTeorUrl = inteiroTeorUrl;
         this.inteiroTeorText = inteiroTeorText;
         this.ementa = ementa;
         this.anexos = anexos;
@@ -55,6 +57,7 @@ export class CaseDetail {
         if (!this.dataJulgamento) missing.push('dataJulgamento');
         if (!this.relator) missing.push('relator');
         if (!this.resumoText) missing.push('resumoText');
+        if (!this.inteiroTeorUrl) missing.push('inteiroTeorUrl');
         if (!this.inteiroTeorText) missing.push('inteiroTeorText');
         if (!this.anexos) missing.push('anexos');
         if (!this.documentosProcesso) missing.push('documentosProcesso');
@@ -77,6 +80,7 @@ export class CaseDetail {
             dataJulgamento: this.dataJulgamento,
             relator: this.relator,
             resumoText: this.resumoText,
+            inteiroTeorUrl: this.inteiroTeorUrl,
             inteiroTeorText: this.inteiroTeorText,
             ementa: this.ementa,
             anexos: this.anexos,
