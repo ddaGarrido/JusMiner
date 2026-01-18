@@ -1,196 +1,403 @@
 import * as cheerio from 'cheerio';
 import { CaseDetail } from '../domain/CaseDetail.js';
 
+/**
+ * Extraction result status
+ */
+const EXTRACTION_STATUS = {
+    FOUND: 'found',
+    MISSING: 'missing',
+    BLOCKED: 'blocked'
+};
+
+/**
+ * Main parser function for case detail pages
+ */
 export function parseCaseDetailPage(html, url) {
     const $ = cheerio.load(html);
     const detail = new CaseDetail({ url });
 
-    // Extract Data from HTML
     try {
-        extractIdFromUrl(detail,url);
-        detail.inteiroTeorUrl = $(`a[href*="inteiro-teor"]`).attr('href');
-
+        // Extract basic fields
+        extractIdFromUrl(detail, url);
+        extractInteiroTeorUrl(detail, $);
         extractTitle(detail, $);
-
         extractResumo(detail, $);
 
+        // Extract sidebar fields
         const sidebar = extractSideBar(detail, $);
-        if (!sidebar) return detail;
+        if (sidebar) {
+            extractSidebarFields(detail, $, sidebar);
+        }
 
-        extractProcesso(detail, $, sidebar);
-
-        extractOrgaoJulgador(detail, $, sidebar);
-
-        extractDataPublicacao(detail, $, sidebar);
-
-        extractDataJulgamento(detail, $, sidebar);
-
-        extractRelator(detail, $, sidebar);
-
-        extractCaseDocuments(detail, $, sidebar);
     } catch (error) {
-        detail.extractionMeta.notes.push(`Error parsing case detail: ${error.message}`);
-        detail.extractionMeta.blocked = true;
-        detail.extractionMeta.missingFields.push('caseDetail');
+        recordError(detail, error, 'parseCaseDetailPage');
+    } finally {
+        detail.validate();
     }
-    detail.validate();
 
     return detail;
 }
 
+/**
+ * Extract ID from URL
+ */
 function extractIdFromUrl(detail, url) {
-    const idMatch = url.match(/\/jurisprudencia\/[^\/]+\/(\d+)/);
-    if (idMatch) detail.id = idMatch[1];
-    else markAsMissing(detail, 'id','Jurisprudencia ID not found in URL');
+    try {
+        const idMatch = url.match(/\/jurisprudencia\/[^\/]+\/(\d+)/);
+        if (idMatch) {
+            detail.id = idMatch[1];
+        } else {
+            markAsMissing(detail, 'id', 'Jurisprudencia ID not found in URL');
+        }
+    } catch (error) {
+        recordError(detail, error, 'extractIdFromUrl');
+        markAsMissing(detail, 'id', `Error extracting ID: ${error.message}`);
+    }
 }
 
+/**
+ * Extract inteiro teor URL
+ */
+function extractInteiroTeorUrl(detail, $) {
+    try {
+        const url = $(`a[href*="inteiro-teor"]`).attr('href');
+        if (url) {
+            detail.inteiroTeorUrl = url;
+        } else {
+            markAsMissing(detail, 'inteiroTeorUrl', 'Inteiro teor URL not found');
+        }
+    } catch (error) {
+        recordError(detail, error, 'extractInteiroTeorUrl');
+        markAsMissing(detail, 'inteiroTeorUrl', `Error extracting inteiro teor URL: ${error.message}`);
+    }
+}
+
+/**
+ * Extract title from page
+ */
 function extractTitle(detail, $) {
-    const titleEl = extractIfExists($, 'h1.heading_root__J_K7z.heading_size2xl__V6Mbz, h1[class*="heading_size2xl"]');
-
-    if (titleEl) detail.title = titleEl.text().trim();
-    else markAsMissing(detail, 'title','Title not found');
+    try {
+        const titleEl = extractIfExists($, 'h1.heading_root__J_K7z.heading_size2xl__V6Mbz, h1[class*="heading_size2xl"]');
+        if (titleEl) {
+            detail.title = titleEl.text();
+        } else {
+            markAsMissing(detail, 'title', 'Title not found on page');
+        }
+    } catch (error) {
+        recordError(detail, error, 'extractTitle');
+        markAsMissing(detail, 'title', `Error extracting title: ${error.message}`);
+    }
 }
 
+/**
+ * Extract resumo (summary) from page
+ */
+function extractResumo(detail, $) {
+    try {
+        const resumo = extractIfExists($, 'div[data-text-from-component="docview/JurisDocument"]');
+        if (resumo && resumo.length > 0) {
+            const title = resumo.find('h2').text();
+            const content = resumo.find('p').text();
+            detail.resumoText = title ? `${title} - ${content.substring(0, 100)}...` : content.substring(0, 100) + '...';
+        } else {
+            markAsMissing(detail, 'resumoText', 'Resumo section not found on page');
+        }
+    } catch (error) {
+        recordError(detail, error, 'extractResumo');
+        markAsMissing(detail, 'resumoText', `Error extracting resumo: ${error.message}`);
+    }
+}
+
+/**
+ * Extract sidebar element
+ */
 function extractSideBar(detail, $) {
-    const sidebar = extractIfExists($, 'aside.layout_sidebarWrapper__vtUZP, .sidebar_sidebar___Bcz3');
-
-    if (sidebar) return sidebar;
-    else {
-        markAsMissing(detail, 'sidebar','Sidebar not found');
-
-        // Sidebard other fields missed
-        markAsMissing(detail, 'processo','Processo not found');
-        markAsMissing(detail, 'orgaoJulgador','Órgão Julgador not found');
-        markAsMissing(detail, 'dataPublicacao','Data de publicação not found');
-        markAsMissing(detail, 'dataJulgamento','Data de julgamento not found');
-        markAsMissing(detail, 'relator','Relator not found');
-        markAsMissing(detail, 'caseDocuments','Documentos do processo not found');
-
+    try {
+        const sidebar = extractIfExists($, 'aside.layout_sidebarWrapper__vtUZP, .sidebar_sidebar___Bcz3');
+        if (!sidebar) {
+            markAsMissing(detail, 'sidebar', 'Sidebar not found on page');
+            // Mark all sidebar-dependent fields as missing
+            const sidebarFields = ['processo', 'orgaoJulgador', 'dataPublicacao', 'dataJulgamento', 'relator', 'anexos', 'documentosProcesso'];
+            sidebarFields.forEach(field => {
+                markAsMissing(detail, field, 'Sidebar not found, cannot extract field');
+            });
+        }
+        return sidebar;
+    } catch (error) {
+        recordError(detail, error, 'extractSideBar');
+        markAsMissing(detail, 'sidebar', `Error extracting sidebar: ${error.message}`);
         return null;
     }
 }
 
-function extractProcesso(detail, $, sidebar) {
-    const processo = extractSidebarDetailValue($, sidebar, 'Processo');
-    if (processo) detail.processo = processo;
-    else markAsMissing(detail, 'processo','Processo not found');
-} 
+/**
+ * Extract all sidebar fields using a unified approach
+ */
+function extractSidebarFields(detail, $, sidebar) {
+    const sidebarFieldMappings = [
+        { field: 'processo', label: 'Processo' },
+        { field: 'orgaoJulgador', label: 'Órgão Julgador' },
+        { field: 'dataPublicacao', label: 'Data de publicação' },
+        { field: 'dataJulgamento', label: 'Data de julgamento' },
+        { field: 'relator', label: 'Relator' }
+    ];
 
-function extractOrgaoJulgador(detail, $, sidebar) {
-    const orgaoJulgador = extractSidebarDetailValue($, sidebar, 'Órgão Julgador');
-    if (orgaoJulgador) detail.orgaoJulgador = orgaoJulgador;
-    else markAsMissing(detail, 'orgaoJulgador','Órgão Julgador not found');
-}
-
-function extractDataPublicacao(detail, $, sidebar) {
-    const dataPublicacao = extractSidebarDetailValue($, sidebar, 'Data de publicação');
-    if (dataPublicacao) detail.dataPublicacao = dataPublicacao;
-    else markAsMissing(detail, 'dataPublicacao','Data de publicação not found');
-}
-
-function extractDataJulgamento(detail, $, sidebar) {
-    const dataJulgamento = extractSidebarDetailValue($, sidebar, 'Data de julgamento');
-    if (dataJulgamento) detail.dataJulgamento = dataJulgamento;
-    else markAsMissing(detail, 'dataJulgamento','Data de julgamento not found');
-}
-
-function extractRelator(detail, $, sidebar) {
-    const relator = extractSidebarDetailValue($, sidebar, 'Relator');
-    if (relator) detail.relator = relator;
-    else markAsMissing(detail, 'relator','Relator not found');
-}
-
-function extractCaseDocuments(detail, $, sidebar) {    
-    // case attachments
-    const attachmentsDiv = extractIfExists($, 'div.attachments_attachmentList__8tkHF');
-
-    const attachmentDivs = attachmentsDiv.find('div.file-content_root__35RS2', false);
-
-    attachmentDivs.each((index, element) => {
-        const $attachmentDiv = $(element);
-        const $pTags = $attachmentDiv.find('p');
-        const attachmentDivText = $pTags.map((index, element) => {
-            return $(element).text().trim();
-        }).get().join(' | ');
-        detail.anexos.push(attachmentDivText);
+    sidebarFieldMappings.forEach(({ field, label }) => {
+        try {
+            const result = extractSidebarDetailValue($, sidebar, label);
+            if (result.status === EXTRACTION_STATUS.FOUND) {
+                detail[field] = result.value;
+            } else if (result.status === EXTRACTION_STATUS.BLOCKED) {
+                markAsBlocked(detail, field, result.reason || `${label} is blocked by login requirement`);
+            } else {
+                markAsMissing(detail, field, result.reason || `${label} not found in sidebar`);
+            }
+        } catch (error) {
+            recordError(detail, error, `extractSidebarFields.${field}`);
+            markAsMissing(detail, field, `Error extracting ${label}: ${error.message}`);
+        }
     });
 
-    // case documents
-    const caseDocumentsDivs = extractIfExists($, 'div.related-documents_textWrapper__aEph8', false);
-
-    caseDocumentsDivs.each((index, element) => {
-        const $caseDocumentsDiv = $(element);
-        const $pTags = $caseDocumentsDiv.find('p');
-        const caseDocumentsDivText = $pTags.map((index, element) => {
-            return $(element).text().trim();
-        }).get().join(' | ');
-        detail.documentosProcesso.push(caseDocumentsDivText);
-    });
+    // Extract documents separately as they have different structure
+    extractCaseDocuments(detail, $, sidebar);
 }
 
-function extractSidebarDetailValue($, sidebar, selector) {
-    // Find the label index based on the selector inside the sidebar
-    const $label = $(`h3[data-fds-detail-label="true"]:contains("${selector}")`);
-    const labelIndex = $(`h3[data-fds-detail-label="true"]`).index($label);
+/**
+ * Extract sidebar detail value with status tracking
+ * Returns: { status: 'found'|'missing'|'blocked', value?: string, reason?: string }
+ */
+function extractSidebarDetailValue($, sidebar, label) {
+    try {
+        // Find the label index based on the label text inside the sidebar
+        const $label = sidebar.find(`h3[data-fds-detail-label="true"]:contains("${label}")`);
+        
+        if (!$label || $label.length === 0) {
+            return {
+                status: EXTRACTION_STATUS.MISSING,
+                reason: `Label "${label}" not found in sidebar`
+            };
+        }
 
-    if (!labelIndex || labelIndex === -1) {
-        console.log('Label not found for selector: ', selector);
-        return null;
+        const allLabels = sidebar.find('h3[data-fds-detail-label="true"]');
+        const labelIndex = allLabels.index($label);
+
+        if (labelIndex === -1) {
+            return {
+                status: EXTRACTION_STATUS.MISSING,
+                reason: `Could not determine index for label "${label}"`
+            };
+        }
+
+        // Find the corresponding value element
+        const valueElements = sidebar.find('div[data-fds-detail-value="true"]');
+        const valueElement = valueElements.eq(labelIndex);
+
+        if (!valueElement || valueElement.length === 0) {
+            return {
+                status: EXTRACTION_STATUS.MISSING,
+                reason: `Value element not found for label "${label}" at index ${labelIndex}`
+            };
+        }
+
+        // Check if blocked by login button
+        if (isBlockedByButton(valueElement)) {
+            return {
+                status: EXTRACTION_STATUS.BLOCKED,
+                reason: `Value for "${label}" is blocked by login requirement (Mostrar button present)`
+            };
+        }
+
+        const value = valueElement.text();
+        if (!value) {
+            return {
+                status: EXTRACTION_STATUS.MISSING,
+                reason: `Value for "${label}" is empty`
+            };
+        }
+
+        return {
+            status: EXTRACTION_STATUS.FOUND,
+            value
+        };
+    } catch (error) {
+        return {
+            status: EXTRACTION_STATUS.MISSING,
+            reason: `Error extracting "${label}": ${error.message}`
+        };
     }
-
-    //Find the element with the value to check if it is blocked by a button
-    const valueElement = $(`div[data-fds-detail-value="true"]`).eq(labelIndex);
-
-    if (!valueElement || valueElement.length === 0) {
-        console.log('Value element not found for selector: ', selector);
-        return null;
-    }
-
-    if (isBlockedByButton(valueElement)) {
-        console.log('Value element is blocked by a button: ', selector);
-        return null;
-    }
-
-    return valueElement.text().trim();
 }
 
+/**
+ * Check if element is blocked by a login button
+ */
 function isBlockedByButton(element) {
-    return element.find('button').text().trim().includes('Mostrar');
+    try {
+        const button = element.find('button');
+        if (button && button.length > 0) {
+            const buttonText = button.text().toLowerCase();
+            return buttonText.includes('mostrar') || buttonText.includes('login') || buttonText.includes('entrar');
+        }
+        return false;
+    } catch (error) {
+        return false;
+    }
 }
 
+/**
+ * Extract case documents (attachments and related documents)
+ */
+function extractCaseDocuments(detail, $, sidebar) {
+    try {
+        // Extract attachments
+        const attachmentsDiv = extractIfExists($, 'div.attachments_attachmentList__8tkHF');
+        if (attachmentsDiv && attachmentsDiv.length > 0) {
+            const attachmentDivs = attachmentsDiv.find('div.file-content_root__35RS2');
+            attachmentDivs.each((index, element) => {
+                try {
+                    const $attachmentDiv = $(element);
+                    const $pTags = $attachmentDiv.find('p');
+                    const attachmentText = $pTags.map((i, el) => $(el).text())
+                        .get()
+                        .filter(text => text.length > 0)
+                        .join(' | ');
+                    if (attachmentText) {
+                        detail.anexos.push(attachmentText);
+                    }
+                } catch (error) {
+                    recordError(detail, error, `extractCaseDocuments.attachment[${index}]`);
+                }
+            });
+        }
+
+        // Extract related documents
+        const caseDocumentsDivs = extractIfExists($, 'div.related-documents_textWrapper__aEph8', false);
+        if (caseDocumentsDivs && caseDocumentsDivs.length > 0) {
+            caseDocumentsDivs.each((index, element) => {
+                try {
+                    const $caseDocumentsDiv = $(element);
+                    const $pTags = $caseDocumentsDiv.find('p');
+                    const caseDocumentsText = $pTags.map((i, el) => $(el).text())
+                        .get()
+                        .filter(text => text.length > 0)
+                        .join(' | ');
+                    if (caseDocumentsText) {
+                        detail.documentosProcesso.push(caseDocumentsText);
+                    }
+                } catch (error) {
+                    recordError(detail, error, `extractCaseDocuments.document[${index}]`);
+                }
+            });
+        }
+
+        // Mark as missing if no documents found
+        if (detail.anexos.length === 0 && detail.documentosProcesso.length === 0) {
+            markAsMissing(detail, 'anexos', 'No attachments found');
+            markAsMissing(detail, 'documentosProcesso', 'No related documents found');
+        }
+    } catch (error) {
+        recordError(detail, error, 'extractCaseDocuments');
+        markAsMissing(detail, 'anexos', `Error extracting documents: ${error.message}`);
+        markAsMissing(detail, 'documentosProcesso', `Error extracting documents: ${error.message}`);
+    }
+}
+
+/**
+ * Extract element if it exists in the DOM
+ */
 function extractIfExists($, selector, first = true) {
-    const element = $(selector);
-    if (element && element.length > 0) {
-        return first ? element.first() : element;
-    } else {
+    try {
+        const element = $(selector);
+        if (element && element.length > 0) {
+            return first ? element.first() : element;
+        }
+        return null;
+    } catch (error) {
         return null;
     }
 }
 
+/**
+ * Mark a field as missing (not present on page)
+ */
 function markAsMissing(detail, field, reason) {
-    detail.extractionMeta ||= { missingFields: [], notes: [] };
+    ensureExtractionMeta(detail);
     if (!detail.extractionMeta.missingFields.includes(field)) {
         detail.extractionMeta.missingFields.push(field);
     }
-    if (reason) detail.extractionMeta.notes.push(reason);
+    if (reason) {
+        detail.extractionMeta.notes.push(`[${field}] ${reason}`);
+    }
 }
 
-function extractResumo(detail, $) {
-    const resumo = extractIfExists($, 'div[data-text-from-component="docview/JurisDocument"]');
-
-    const title = resumo.find('h2').text().trim();
-    const content = resumo.find('p').text().length;
-
-    detail.resumoText = title + ' - ' + content;
+/**
+ * Mark a field as blocked (requires login)
+ */
+function markAsBlocked(detail, field, reason) {
+    ensureExtractionMeta(detail);
+    if (!detail.extractionMeta.blockedFields.includes(field)) {
+        detail.extractionMeta.blockedFields.push(field);
+    }
+    if (reason) {
+        detail.extractionMeta.notes.push(`[${field}] BLOCKED: ${reason}`);
+    }
 }
 
-export function parseInteiroTeorPage(html) {
-    const $ = cheerio.load(html);
+/**
+ * Record an error with stack trace
+ */
+function recordError(detail, error, context) {
+    ensureExtractionMeta(detail);
+    const errorInfo = {
+        context,
+        message: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString()
+    };
+    detail.extractionMeta.errors.push(errorInfo);
     
-    const inteiroTeorContent = extractIfExists($, 'div[data-text-from-component="docview/JurisDocument"]');
+    // Also add to notes for visibility
+    detail.extractionMeta.notes.push(
+        `[ERROR in ${context}] ${error.message}${error.stack ? `\nStack: ${error.stack}` : ''}`
+    );
+}
 
-    const title = inteiroTeorContent.find('h2').text().trim();
-    const content = inteiroTeorContent.find('p').text().length;
+/**
+ * Ensure extractionMeta is properly initialized
+ */
+function ensureExtractionMeta(detail) {
+    if (!detail.extractionMeta) {
+        detail.extractionMeta = {
+            extractedAt: new Date().toISOString(),
+            missingFields: [],
+            blockedFields: [],
+            errors: [],
+            notes: []
+        };
+    }
+    if (!detail.extractionMeta.missingFields) detail.extractionMeta.missingFields = [];
+    if (!detail.extractionMeta.blockedFields) detail.extractionMeta.blockedFields = [];
+    if (!detail.extractionMeta.errors) detail.extractionMeta.errors = [];
+    if (!detail.extractionMeta.notes) detail.extractionMeta.notes = [];
+}
 
-    return title + ' - ' + content;
+/**
+ * Parse inteiro teor page
+ */
+export function parseInteiroTeorPage(html) {
+    try {
+        const $ = cheerio.load(html);
+        const inteiroTeorContent = extractIfExists($, 'div[data-text-from-component="docview/JurisDocument"]');
+        
+        if (!inteiroTeorContent || inteiroTeorContent.length === 0) {
+            return null;
+        }
+
+        const title = inteiroTeorContent.find('h2').text();
+        const content = inteiroTeorContent.find('p').text();
+        
+        return title ? `${title} - ${content.substring(0, 100)}...` : content.substring(0, 100) + '...';
+    } catch (error) {
+        throw new Error(`Error parsing inteiro teor page: ${error.message}\n${error.stack}`);
+    }
 }

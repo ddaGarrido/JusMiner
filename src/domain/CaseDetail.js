@@ -20,7 +20,8 @@ export class CaseDetail {
         extractionMeta = {
             extractedAt: new Date().toISOString(),
             missingFields: [],
-            blocked: false,
+            blockedFields: [],
+            errors: [],
             notes: []
         }
     } = {}) {
@@ -43,27 +44,43 @@ export class CaseDetail {
 
     /**
      * Validates required fields and updates missingFields
+     * Note: This only checks if fields are null/empty, not if they were blocked or missing during extraction
      */
     validate() {
+        const requiredFields = ['id', 'title', 'url'];
+        const optionalFields = [
+            'processo', 'orgaoJulgador', 'dataPublicacao', 'dataJulgamento',
+            'relator', 'resumoText', 'inteiroTeorUrl', 'inteiroTeorText',
+            'anexos', 'documentosProcesso'
+        ];
+        
         const missing = [];
-        if (!this.id) missing.push('id');
-        if (!this.title) missing.push('title');
-        if (!this.url) missing.push('url');
         
-        // Optional but important fields
-        if (!this.processo) missing.push('processo');
-        if (!this.orgaoJulgador) missing.push('orgaoJulgador');
-        if (!this.dataPublicacao) missing.push('dataPublicacao');
-        if (!this.dataJulgamento) missing.push('dataJulgamento');
-        if (!this.relator) missing.push('relator');
-        if (!this.resumoText) missing.push('resumoText');
-        if (!this.inteiroTeorUrl) missing.push('inteiroTeorUrl');
-        if (!this.inteiroTeorText) missing.push('inteiroTeorText');
-        if (!this.anexos) missing.push('anexos');
-        if (!this.documentosProcesso) missing.push('documentosProcesso');
+        // Check required fields
+        for (const field of requiredFields) {
+            if (!this[field]) {
+                missing.push(field);
+            }
+        }
         
-        this.extractionMeta.missingFields = missing;
-        return missing.length === 0;
+        // Check optional fields (only if not already marked as missing/blocked in extractionMeta)
+        for (const field of optionalFields) {
+            const value = this[field];
+            const isArray = Array.isArray(value);
+            const isEmpty = value === null || value === undefined || (isArray && value.length === 0);
+            
+            if (isEmpty && 
+                !this.extractionMeta.missingFields.includes(field) && 
+                !this.extractionMeta.blockedFields.includes(field)) {
+                missing.push(field);
+            }
+        }
+        
+        // Merge with existing missing fields from extraction
+        const allMissing = [...new Set([...this.extractionMeta.missingFields, ...missing])];
+        this.extractionMeta.missingFields = allMissing;
+        
+        return allMissing.length === 0;
     }
 
     /**
