@@ -4,7 +4,7 @@ import { HttpClient } from '../http/HttpClient.js';
 import { createContext } from '../observability/Context.js';
 import { createLogger, createLogSink } from '../observability/Logger.js';
 import { createMetricsCore, createMetrics } from '../observability/Metrics.js';
-import { executeJurisprudSearchFlow } from '../flows/JurisPrudSearch.js';
+import { executeJurisprudSearchFlow } from '../flows/jurisprudSearch.js';
 import { getRunDir, getLogPath, getSummaryPath, getResultsPath, getCasesPath } from '../storage/runPaths.js';
 import { ensureDir, writeJson, writeJsonl } from '../storage/runWriters.js';
 
