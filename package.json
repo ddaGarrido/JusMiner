@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "jurisprud-search": "node src/cli/jurisprudSearch.js"
+    "jurisprud-search": "node src/cli/run.js"
   },
   "keywords": [],
   "author": "",

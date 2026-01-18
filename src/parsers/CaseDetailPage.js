@@ -1,10 +1,5 @@
 import * as cheerio from 'cheerio';
 import { CaseDetail } from '../domain/CaseDetail.js';
-import { SearchResultItem } from '../domain/SearchResultItem.js';
-
-function normalizeText(text) {
-    return text.trim().replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
-}
 
 export function parseCaseDetailPage(html, url) {
     const $ = cheerio.load(html);

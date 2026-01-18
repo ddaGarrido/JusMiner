@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { HttpClient } from '../../http/HttpClient.js';
-import { createContext } from '../../observability/Context.js';
-import { createLogger, createLogSink } from '../../observability/Logger.js';
-import { createMetricsCore, createMetrics } from '../../observability/Metrics.js';
+import { HttpClient } from '../http/HttpClient.js';
+import { createContext } from '../observability/Context.js';
+import { createLogger, createLogSink } from '../observability/Logger.js';
+import { createMetricsCore, createMetrics } from '../observability/Metrics.js';
 import { executeJurisprudSearchFlow } from '../flows/JurisPrudSearch.js';
-import { getRunDir, getLogPath, getSummaryPath, getResultsPath, getCasesPath } from '../../storage/runPaths.js';
-import { ensureDir, writeJson, writeJsonl } from '../../storage/runWriters.js';
+import { getRunDir, getLogPath, getSummaryPath, getResultsPath, getCasesPath } from '../storage/runPaths.js';
+import { ensureDir, writeJson, writeJsonl } from '../storage/runWriters.js';
 
 const BASE_URL = 'https://www.jusbrasil.com.br';
 
@@ -38,7 +38,7 @@ function parseArgs() {
             config.outputDir = args[++i];
         } else if (arg === '--help' || arg === '-h') {
             console.log(`
-            Usage: node src/cli/jurisprudSearch.js [options]
+            Usage: node src/cli/run.js [options]
 
             Options:
             -t, --term <term>          Search term (required)
@@ -49,7 +49,7 @@ function parseArgs() {
             -h, --help                 Show this help message
 
             Example:
-            node src/cli/jurisprudSearch.js --term "direito penal" --max-results 20 --max-details 10
+            node src/cli/run.js --term "direito penal" --max-results 20 --max-details 10
             `);
             process.exit(0);
         } else if (!arg.startsWith('-') && !config.searchTerm) {
