@@ -1,44 +1,1085 @@
 {
     "scenarios": [
         {
-            "name": "smoke-basic",
-            "description": "Basic smoke test to verify the search flow is working",
-            "searchTerm": "direito penal",
-            "filter": "jurisprudencia",
-            "maxResults": 1,
-            "maxDetails": 1,
-            "expectedResults": 1,
-            "expectedDetails": 1
+          "name": "smoke-basic",
+          "description": "Basic smoke test to verify the search flow is working",
+          "searchTerm": "direito penal",
+          "filter": "jurisprudencia",
+          "maxResults": 1,
+          "maxDetails": 1,
+          "expectedResults": 1,
+          "expectedDetails": 1
         },
         {
-            "name": "smoke-basic-5",
-            "description": "Basic smoke test to verify the search flow is working with 5 results and 5 details",
-            "searchTerm": "direito penal",
-            "filter": "jurisprudencia",
-            "maxResults": 5,
-            "maxDetails": 5,
-            "expectedResults": 5,
-            "expectedDetails": 5
+          "name": "smoke-basic-5",
+          "description": "Basic smoke test to verify the search flow is working with 5 results and 5 details",
+          "searchTerm": "direito penal",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 5,
+          "expectedResults": 5,
+          "expectedDetails": 5
         },
         {
-            "name": "smoke-basic-10",
-            "description": "Basic smoke test to verify the search flow is working with 10 results and 10 details",
-            "searchTerm": "direito penal",
-            "filter": "jurisprudencia",
-            "maxResults": 10,
-            "maxDetails": 10,
-            "expectedResults": 10,
-            "expectedDetails": 10
+          "name": "smoke-basic-10",
+          "description": "Basic smoke test to verify the search flow is working with 10 results and 10 details",
+          "searchTerm": "direito penal",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 10,
+          "expectedResults": 10,
+          "expectedDetails": 10
+        },
+    
+        {
+          "name": "juris-001-consumidor-contrato",
+          "description": "Consumer law contract dispute sample",
+          "searchTerm": "direito do consumidor contrato",
+          "filter": "jurisprudencia",
+          "maxResults": 3,
+          "maxDetails": 2,
+          "expectedResults": 3,
+          "expectedDetails": 2
         },
         {
-            "name": "smoke-basic-20",
-            "description": "Basic smoke test to verify the search flow is working with 20 results and 20 details",
-            "searchTerm": "direito penal",
-            "filter": "jurisprudencia",
-            "maxResults": 20,
-            "maxDetails": 20,
-            "expectedResults": 20,
-            "expectedDetails": 20
+          "name": "juris-002-consumidor-dano-moral",
+          "description": "Consumer law moral damages sample",
+          "searchTerm": "dano moral consumidor",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 4,
+          "expectedResults": 6,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-003-consumidor-cobranca-indevida",
+          "description": "Undue billing / consumer charging sample",
+          "searchTerm": "cobrança indevida consumidor",
+          "filter": "jurisprudencia",
+          "maxResults": 4,
+          "maxDetails": 3,
+          "expectedResults": 4,
+          "expectedDetails": 3
+        },
+        {
+          "name": "juris-004-consumidor-produto-defeituoso",
+          "description": "Defective product consumer sample",
+          "searchTerm": "produto defeituoso consumidor",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 5,
+          "expectedResults": 7,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-005-consumidor-negativacao",
+          "description": "Credit bureau listing / negative registration sample",
+          "searchTerm": "negativação indevida",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 5,
+          "expectedResults": 5,
+          "expectedDetails": 5
+        },
+    
+        {
+          "name": "juris-006-civel-responsabilidade-civil",
+          "description": "Civil liability sample",
+          "searchTerm": "responsabilidade civil",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 6,
+          "expectedResults": 8,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-007-civel-lucros-cessantes",
+          "description": "Loss of profits sample",
+          "searchTerm": "lucros cessantes",
+          "filter": "jurisprudencia",
+          "maxResults": 4,
+          "maxDetails": 2,
+          "expectedResults": 4,
+          "expectedDetails": 2
+        },
+        {
+          "name": "juris-008-civel-dano-material",
+          "description": "Material damages sample",
+          "searchTerm": "dano material",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 6,
+          "expectedResults": 6,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-009-civel-indenizacao",
+          "description": "General indemnification sample",
+          "searchTerm": "indenização por danos",
+          "filter": "jurisprudencia",
+          "maxResults": 9,
+          "maxDetails": 7,
+          "expectedResults": 9,
+          "expectedDetails": 7
+        },
+        {
+          "name": "juris-010-civel-tutela-urgencia",
+          "description": "Injunctive relief / urgent protection sample",
+          "searchTerm": "tutela de urgência",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 3,
+          "expectedResults": 5,
+          "expectedDetails": 3
+        },
+    
+        {
+          "name": "juris-011-trabalho-horas-extras",
+          "description": "Labor law overtime sample",
+          "searchTerm": "horas extras",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 8,
+          "expectedResults": 10,
+          "expectedDetails": 8
+        },
+        {
+          "name": "juris-012-trabalho-vinculo-emprego",
+          "description": "Employment relationship recognition sample",
+          "searchTerm": "reconhecimento de vínculo empregatício",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 7,
+          "expectedResults": 7,
+          "expectedDetails": 7
+        },
+        {
+          "name": "juris-013-trabalho-rescisao-indireta",
+          "description": "Indirect termination sample",
+          "searchTerm": "rescisão indireta",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 4,
+          "expectedResults": 6,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-014-trabalho-dano-moral-trabalhista",
+          "description": "Labor moral damages sample",
+          "searchTerm": "dano moral trabalhista",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 5,
+          "expectedResults": 8,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-015-trabalho-assedio-moral",
+          "description": "Workplace harassment sample",
+          "searchTerm": "assédio moral",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 5,
+          "expectedResults": 5,
+          "expectedDetails": 5
+        },
+    
+        {
+          "name": "juris-016-penal-trafico-drogas",
+          "description": "Drug trafficking sample",
+          "searchTerm": "tráfico de drogas",
+          "filter": "jurisprudencia",
+          "maxResults": 9,
+          "maxDetails": 6,
+          "expectedResults": 9,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-017-penal-roubo-majorado",
+          "description": "Aggravated robbery sample",
+          "searchTerm": "roubo majorado",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 4,
+          "expectedResults": 7,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-018-penal-furto-qualificado",
+          "description": "Qualified theft sample",
+          "searchTerm": "furto qualificado",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 6,
+          "expectedResults": 8,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-019-penal-habeas-corpus",
+          "description": "Habeas corpus sample",
+          "searchTerm": "habeas corpus",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 10,
+          "expectedResults": 10,
+          "expectedDetails": 10
+        },
+        {
+          "name": "juris-020-penal-prisao-preventiva",
+          "description": "Preventive detention sample",
+          "searchTerm": "prisão preventiva",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 3,
+          "expectedResults": 6,
+          "expectedDetails": 3
+        },
+    
+        {
+          "name": "juris-021-familia-alimentos",
+          "description": "Family law alimony sample",
+          "searchTerm": "ação de alimentos",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 5,
+          "expectedResults": 7,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-022-familia-guarda-compartilhada",
+          "description": "Shared custody sample",
+          "searchTerm": "guarda compartilhada",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 4,
+          "expectedResults": 5,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-023-familia-divorcio-litigioso",
+          "description": "Litigious divorce sample",
+          "searchTerm": "divórcio litigioso",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 6,
+          "expectedResults": 6,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-024-familia-uniao-estavel",
+          "description": "Stable union recognition sample",
+          "searchTerm": "reconhecimento de união estável",
+          "filter": "jurisprudencia",
+          "maxResults": 4,
+          "maxDetails": 2,
+          "expectedResults": 4,
+          "expectedDetails": 2
+        },
+        {
+          "name": "juris-025-familia-inventario-partilha",
+          "description": "Inventory and asset partition sample",
+          "searchTerm": "inventário partilha",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 5,
+          "expectedResults": 8,
+          "expectedDetails": 5
+        },
+    
+        {
+          "name": "juris-026-empresarial-recuperacao-judicial",
+          "description": "Judicial recovery sample",
+          "searchTerm": "recuperação judicial",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 7,
+          "expectedResults": 10,
+          "expectedDetails": 7
+        },
+        {
+          "name": "juris-027-empresarial-falencia",
+          "description": "Bankruptcy sample",
+          "searchTerm": "falência",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 4,
+          "expectedResults": 6,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-028-empresarial-desconsideracao",
+          "description": "Piercing the corporate veil sample",
+          "searchTerm": "desconsideração da personalidade jurídica",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 5,
+          "expectedResults": 7,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-029-empresarial-contrato-social",
+          "description": "Corporate contract sample",
+          "searchTerm": "contrato social sociedade",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 3,
+          "expectedResults": 5,
+          "expectedDetails": 3
+        },
+        {
+          "name": "juris-030-empresarial-inadimplemento",
+          "description": "Default/inadimplence sample",
+          "searchTerm": "inadimplemento contratual",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 6,
+          "expectedResults": 8,
+          "expectedDetails": 6
+        },
+    
+        {
+          "name": "juris-031-administrativo-licitacao",
+          "description": "Public procurement sample",
+          "searchTerm": "licitação",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 4,
+          "expectedResults": 6,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-032-administrativo-servidor-publico",
+          "description": "Public servant sample",
+          "searchTerm": "servidor público",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 5,
+          "expectedResults": 7,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-033-administrativo-improbidade",
+          "description": "Administrative improbity sample",
+          "searchTerm": "improbidade administrativa",
+          "filter": "jurisprudencia",
+          "maxResults": 9,
+          "maxDetails": 7,
+          "expectedResults": 9,
+          "expectedDetails": 7
+        },
+        {
+          "name": "juris-034-administrativo-mandado-seguranca",
+          "description": "Writ of mandamus sample",
+          "searchTerm": "mandado de segurança",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 6,
+          "expectedResults": 8,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-035-administrativo-ato-administrativo",
+          "description": "Administrative act sample",
+          "searchTerm": "ato administrativo",
+          "filter": "jurisprudencia",
+          "maxResults": 4,
+          "maxDetails": 3,
+          "expectedResults": 4,
+          "expectedDetails": 3
+        },
+    
+        {
+          "name": "juris-036-previdenciario-auxilio-doenca",
+          "description": "Social security sickness benefit sample",
+          "searchTerm": "auxílio-doença",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 5,
+          "expectedResults": 7,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-037-previdenciario-aposentadoria-invalidez",
+          "description": "Disability retirement sample",
+          "searchTerm": "aposentadoria por invalidez",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 4,
+          "expectedResults": 6,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-038-previdenciario-bpc-loas",
+          "description": "BPC/LOAS benefit sample",
+          "searchTerm": "BPC LOAS",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 3,
+          "expectedResults": 5,
+          "expectedDetails": 3
+        },
+        {
+          "name": "juris-039-previdenciario-revisao-beneficio",
+          "description": "Benefit revision sample",
+          "searchTerm": "revisão de benefício previdenciário",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 6,
+          "expectedResults": 8,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-040-previdenciario-tempo-contribuicao",
+          "description": "Contribution time sample",
+          "searchTerm": "tempo de contribuição INSS",
+          "filter": "jurisprudencia",
+          "maxResults": 4,
+          "maxDetails": 2,
+          "expectedResults": 4,
+          "expectedDetails": 2
+        },
+    
+        {
+          "name": "juris-041-tributario-icms",
+          "description": "ICMS tax sample",
+          "searchTerm": "ICMS",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 6,
+          "expectedResults": 10,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-042-tributario-iss",
+          "description": "ISS tax sample",
+          "searchTerm": "ISS",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 4,
+          "expectedResults": 5,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-043-tributario-iptu",
+          "description": "IPTU tax sample",
+          "searchTerm": "IPTU",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 6,
+          "expectedResults": 6,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-044-tributario-execucao-fiscal",
+          "description": "Tax foreclosure sample",
+          "searchTerm": "execução fiscal",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 5,
+          "expectedResults": 8,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-045-tributario-compensacao-tributaria",
+          "description": "Tax compensation sample",
+          "searchTerm": "compensação tributária",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 4,
+          "expectedResults": 7,
+          "expectedDetails": 4
+        },
+    
+        {
+          "name": "juris-046-processual-cumprimento-sentenca",
+          "description": "Judgment enforcement sample",
+          "searchTerm": "cumprimento de sentença",
+          "filter": "jurisprudencia",
+          "maxResults": 9,
+          "maxDetails": 7,
+          "expectedResults": 9,
+          "expectedDetails": 7
+        },
+        {
+          "name": "juris-047-processual-execucao-titulo",
+          "description": "Enforcement of extrajudicial title sample",
+          "searchTerm": "execução de título extrajudicial",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 3,
+          "expectedResults": 6,
+          "expectedDetails": 3
+        },
+        {
+          "name": "juris-048-processual-agravo-instrumento",
+          "description": "Interlocutory appeal sample",
+          "searchTerm": "agravo de instrumento",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 5,
+          "expectedResults": 10,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-049-processual-embargos-declaracao",
+          "description": "Motion for clarification sample",
+          "searchTerm": "embargos de declaração",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 5,
+          "expectedResults": 5,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-050-processual-prescricao",
+          "description": "Statute of limitations sample",
+          "searchTerm": "prescrição",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 6,
+          "expectedResults": 7,
+          "expectedDetails": 6
+        },
+        {
+          "name": "smoke-basic",
+          "description": "Basic smoke test to verify the search flow is working",
+          "searchTerm": "direito penal",
+          "filter": "jurisprudencia",
+          "maxResults": 1,
+          "maxDetails": 1,
+          "expectedResults": 1,
+          "expectedDetails": 1
+        },
+        {
+          "name": "smoke-basic-5",
+          "description": "Basic smoke test to verify the search flow is working with 5 results and 5 details",
+          "searchTerm": "direito penal",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 5,
+          "expectedResults": 5,
+          "expectedDetails": 5
+        },
+        {
+          "name": "smoke-basic-10",
+          "description": "Basic smoke test to verify the search flow is working with 10 results and 10 details",
+          "searchTerm": "direito penal",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 10,
+          "expectedResults": 10,
+          "expectedDetails": 10
+        },
+    
+        {
+          "name": "juris-001-consumidor-contrato",
+          "description": "Consumer law contract dispute sample",
+          "searchTerm": "direito do consumidor contrato",
+          "filter": "jurisprudencia",
+          "maxResults": 3,
+          "maxDetails": 2,
+          "expectedResults": 3,
+          "expectedDetails": 2
+        },
+        {
+          "name": "juris-002-consumidor-dano-moral",
+          "description": "Consumer law moral damages sample",
+          "searchTerm": "dano moral consumidor",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 4,
+          "expectedResults": 6,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-003-consumidor-cobranca-indevida",
+          "description": "Undue billing / consumer charging sample",
+          "searchTerm": "cobrança indevida consumidor",
+          "filter": "jurisprudencia",
+          "maxResults": 4,
+          "maxDetails": 3,
+          "expectedResults": 4,
+          "expectedDetails": 3
+        },
+        {
+          "name": "juris-004-consumidor-produto-defeituoso",
+          "description": "Defective product consumer sample",
+          "searchTerm": "produto defeituoso consumidor",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 5,
+          "expectedResults": 7,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-005-consumidor-negativacao",
+          "description": "Credit bureau listing / negative registration sample",
+          "searchTerm": "negativação indevida",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 5,
+          "expectedResults": 5,
+          "expectedDetails": 5
+        },
+    
+        {
+          "name": "juris-006-civel-responsabilidade-civil",
+          "description": "Civil liability sample",
+          "searchTerm": "responsabilidade civil",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 6,
+          "expectedResults": 8,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-007-civel-lucros-cessantes",
+          "description": "Loss of profits sample",
+          "searchTerm": "lucros cessantes",
+          "filter": "jurisprudencia",
+          "maxResults": 4,
+          "maxDetails": 2,
+          "expectedResults": 4,
+          "expectedDetails": 2
+        },
+        {
+          "name": "juris-008-civel-dano-material",
+          "description": "Material damages sample",
+          "searchTerm": "dano material",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 6,
+          "expectedResults": 6,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-009-civel-indenizacao",
+          "description": "General indemnification sample",
+          "searchTerm": "indenização por danos",
+          "filter": "jurisprudencia",
+          "maxResults": 9,
+          "maxDetails": 7,
+          "expectedResults": 9,
+          "expectedDetails": 7
+        },
+        {
+          "name": "juris-010-civel-tutela-urgencia",
+          "description": "Injunctive relief / urgent protection sample",
+          "searchTerm": "tutela de urgência",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 3,
+          "expectedResults": 5,
+          "expectedDetails": 3
+        },
+    
+        {
+          "name": "juris-011-trabalho-horas-extras",
+          "description": "Labor law overtime sample",
+          "searchTerm": "horas extras",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 8,
+          "expectedResults": 10,
+          "expectedDetails": 8
+        },
+        {
+          "name": "juris-012-trabalho-vinculo-emprego",
+          "description": "Employment relationship recognition sample",
+          "searchTerm": "reconhecimento de vínculo empregatício",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 7,
+          "expectedResults": 7,
+          "expectedDetails": 7
+        },
+        {
+          "name": "juris-013-trabalho-rescisao-indireta",
+          "description": "Indirect termination sample",
+          "searchTerm": "rescisão indireta",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 4,
+          "expectedResults": 6,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-014-trabalho-dano-moral-trabalhista",
+          "description": "Labor moral damages sample",
+          "searchTerm": "dano moral trabalhista",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 5,
+          "expectedResults": 8,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-015-trabalho-assedio-moral",
+          "description": "Workplace harassment sample",
+          "searchTerm": "assédio moral",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 5,
+          "expectedResults": 5,
+          "expectedDetails": 5
+        },
+    
+        {
+          "name": "juris-016-penal-trafico-drogas",
+          "description": "Drug trafficking sample",
+          "searchTerm": "tráfico de drogas",
+          "filter": "jurisprudencia",
+          "maxResults": 9,
+          "maxDetails": 6,
+          "expectedResults": 9,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-017-penal-roubo-majorado",
+          "description": "Aggravated robbery sample",
+          "searchTerm": "roubo majorado",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 4,
+          "expectedResults": 7,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-018-penal-furto-qualificado",
+          "description": "Qualified theft sample",
+          "searchTerm": "furto qualificado",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 6,
+          "expectedResults": 8,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-019-penal-habeas-corpus",
+          "description": "Habeas corpus sample",
+          "searchTerm": "habeas corpus",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 10,
+          "expectedResults": 10,
+          "expectedDetails": 10
+        },
+        {
+          "name": "juris-020-penal-prisao-preventiva",
+          "description": "Preventive detention sample",
+          "searchTerm": "prisão preventiva",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 3,
+          "expectedResults": 6,
+          "expectedDetails": 3
+        },
+    
+        {
+          "name": "juris-021-familia-alimentos",
+          "description": "Family law alimony sample",
+          "searchTerm": "ação de alimentos",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 5,
+          "expectedResults": 7,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-022-familia-guarda-compartilhada",
+          "description": "Shared custody sample",
+          "searchTerm": "guarda compartilhada",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 4,
+          "expectedResults": 5,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-023-familia-divorcio-litigioso",
+          "description": "Litigious divorce sample",
+          "searchTerm": "divórcio litigioso",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 6,
+          "expectedResults": 6,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-024-familia-uniao-estavel",
+          "description": "Stable union recognition sample",
+          "searchTerm": "reconhecimento de união estável",
+          "filter": "jurisprudencia",
+          "maxResults": 4,
+          "maxDetails": 2,
+          "expectedResults": 4,
+          "expectedDetails": 2
+        },
+        {
+          "name": "juris-025-familia-inventario-partilha",
+          "description": "Inventory and asset partition sample",
+          "searchTerm": "inventário partilha",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 5,
+          "expectedResults": 8,
+          "expectedDetails": 5
+        },
+    
+        {
+          "name": "juris-026-empresarial-recuperacao-judicial",
+          "description": "Judicial recovery sample",
+          "searchTerm": "recuperação judicial",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 7,
+          "expectedResults": 10,
+          "expectedDetails": 7
+        },
+        {
+          "name": "juris-027-empresarial-falencia",
+          "description": "Bankruptcy sample",
+          "searchTerm": "falência",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 4,
+          "expectedResults": 6,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-028-empresarial-desconsideracao",
+          "description": "Piercing the corporate veil sample",
+          "searchTerm": "desconsideração da personalidade jurídica",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 5,
+          "expectedResults": 7,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-029-empresarial-contrato-social",
+          "description": "Corporate contract sample",
+          "searchTerm": "contrato social sociedade",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 3,
+          "expectedResults": 5,
+          "expectedDetails": 3
+        },
+        {
+          "name": "juris-030-empresarial-inadimplemento",
+          "description": "Default/inadimplence sample",
+          "searchTerm": "inadimplemento contratual",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 6,
+          "expectedResults": 8,
+          "expectedDetails": 6
+        },
+    
+        {
+          "name": "juris-031-administrativo-licitacao",
+          "description": "Public procurement sample",
+          "searchTerm": "licitação",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 4,
+          "expectedResults": 6,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-032-administrativo-servidor-publico",
+          "description": "Public servant sample",
+          "searchTerm": "servidor público",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 5,
+          "expectedResults": 7,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-033-administrativo-improbidade",
+          "description": "Administrative improbity sample",
+          "searchTerm": "improbidade administrativa",
+          "filter": "jurisprudencia",
+          "maxResults": 9,
+          "maxDetails": 7,
+          "expectedResults": 9,
+          "expectedDetails": 7
+        },
+        {
+          "name": "juris-034-administrativo-mandado-seguranca",
+          "description": "Writ of mandamus sample",
+          "searchTerm": "mandado de segurança",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 6,
+          "expectedResults": 8,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-035-administrativo-ato-administrativo",
+          "description": "Administrative act sample",
+          "searchTerm": "ato administrativo",
+          "filter": "jurisprudencia",
+          "maxResults": 4,
+          "maxDetails": 3,
+          "expectedResults": 4,
+          "expectedDetails": 3
+        },
+    
+        {
+          "name": "juris-036-previdenciario-auxilio-doenca",
+          "description": "Social security sickness benefit sample",
+          "searchTerm": "auxílio-doença",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 5,
+          "expectedResults": 7,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-037-previdenciario-aposentadoria-invalidez",
+          "description": "Disability retirement sample",
+          "searchTerm": "aposentadoria por invalidez",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 4,
+          "expectedResults": 6,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-038-previdenciario-bpc-loas",
+          "description": "BPC/LOAS benefit sample",
+          "searchTerm": "BPC LOAS",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 3,
+          "expectedResults": 5,
+          "expectedDetails": 3
+        },
+        {
+          "name": "juris-039-previdenciario-revisao-beneficio",
+          "description": "Benefit revision sample",
+          "searchTerm": "revisão de benefício previdenciário",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 6,
+          "expectedResults": 8,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-040-previdenciario-tempo-contribuicao",
+          "description": "Contribution time sample",
+          "searchTerm": "tempo de contribuição INSS",
+          "filter": "jurisprudencia",
+          "maxResults": 4,
+          "maxDetails": 2,
+          "expectedResults": 4,
+          "expectedDetails": 2
+        },
+    
+        {
+          "name": "juris-041-tributario-icms",
+          "description": "ICMS tax sample",
+          "searchTerm": "ICMS",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 6,
+          "expectedResults": 10,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-042-tributario-iss",
+          "description": "ISS tax sample",
+          "searchTerm": "ISS",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 4,
+          "expectedResults": 5,
+          "expectedDetails": 4
+        },
+        {
+          "name": "juris-043-tributario-iptu",
+          "description": "IPTU tax sample",
+          "searchTerm": "IPTU",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 6,
+          "expectedResults": 6,
+          "expectedDetails": 6
+        },
+        {
+          "name": "juris-044-tributario-execucao-fiscal",
+          "description": "Tax foreclosure sample",
+          "searchTerm": "execução fiscal",
+          "filter": "jurisprudencia",
+          "maxResults": 8,
+          "maxDetails": 5,
+          "expectedResults": 8,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-045-tributario-compensacao-tributaria",
+          "description": "Tax compensation sample",
+          "searchTerm": "compensação tributária",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 4,
+          "expectedResults": 7,
+          "expectedDetails": 4
+        },
+    
+        {
+          "name": "juris-046-processual-cumprimento-sentenca",
+          "description": "Judgment enforcement sample",
+          "searchTerm": "cumprimento de sentença",
+          "filter": "jurisprudencia",
+          "maxResults": 9,
+          "maxDetails": 7,
+          "expectedResults": 9,
+          "expectedDetails": 7
+        },
+        {
+          "name": "juris-047-processual-execucao-titulo",
+          "description": "Enforcement of extrajudicial title sample",
+          "searchTerm": "execução de título extrajudicial",
+          "filter": "jurisprudencia",
+          "maxResults": 6,
+          "maxDetails": 3,
+          "expectedResults": 6,
+          "expectedDetails": 3
+        },
+        {
+          "name": "juris-048-processual-agravo-instrumento",
+          "description": "Interlocutory appeal sample",
+          "searchTerm": "agravo de instrumento",
+          "filter": "jurisprudencia",
+          "maxResults": 10,
+          "maxDetails": 5,
+          "expectedResults": 10,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-049-processual-embargos-declaracao",
+          "description": "Motion for clarification sample",
+          "searchTerm": "embargos de declaração",
+          "filter": "jurisprudencia",
+          "maxResults": 5,
+          "maxDetails": 5,
+          "expectedResults": 5,
+          "expectedDetails": 5
+        },
+        {
+          "name": "juris-050-processual-prescricao",
+          "description": "Statute of limitations sample",
+          "searchTerm": "prescrição",
+          "filter": "jurisprudencia",
+          "maxResults": 7,
+          "maxDetails": 6,
+          "expectedResults": 7,
+          "expectedDetails": 6
         }
     ]
-}
+  }
+  

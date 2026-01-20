@@ -1,5 +1,6 @@
 import path from 'path';
 import { readFileSync } from 'fs';
+import Bottleneck from 'bottleneck';
 import { createContext } from '../observability/Context.js';
 import { createLogger, createLogSink } from '../observability/Logger.js';
 import { createMetricsCore, createMetrics } from '../observability/Metrics.js';
@@ -12,17 +13,39 @@ function loadScenarios(scenariosPath) {
     return scenarios;
 }
 
+// Initialize Bottleneck - Create a rate limiter for http requests
+function initializeBottleneck(options = {}) {
+    const {
+        maxConcurrent = 10,
+        minTime = 250,
+        reservoir = 10,
+        reservoirRefreshAmount = 10,
+        reservoirRefreshInterval = 6000,
+    } = options;
+
+    return new Bottleneck({
+        maxConcurrent,
+        minTime,
+        reservoir,
+        reservoirRefreshAmount,
+        reservoirRefreshInterval,
+    });
+}
+
 // Main function to run the scenarios
-export async function runScenarios(scenariosPath) {
+export async function runScenarios(scenariosPath, bottleneckOptions = {}) {
     const scenarios = loadScenarios(scenariosPath);
     const context = createContext();
+
+    // Rate limiter configuration
+    const rateLimiter = initializeBottleneck(bottleneckOptions);
 
     // Initialize logging
     const logPath = getLogPath(context.runId);
     const logSink = createLogSink({
         runId: context.runId,
         logFilePath: logPath,
-        alsoConsole: false
+        alsoConsole: true
     });
     const logger = createLogger(logSink, { runId: context.runId });
 
@@ -34,29 +57,84 @@ export async function runScenarios(scenariosPath) {
     const results = {
         runId: context.runId,
         startedAt: context.startedAt,
-        scenarios: []
+        scenarios: [],
+        concurrency: bottleneckOptions
     };
 
-    logger.info('Starting scenarios runner');
+    logger.info('Starting scenarios runner', {
+        totalScenarios: scenarios.scenarios.length,
+        concurrency: bottleneckOptions
+    });
 
-    // Run scenarios
-    for (const scenario of scenarios.scenarios) {
-        logger.info(`Running scenario: ${scenario.name}`);
-        const scenarioResults = await runScenario(scenario, context, logger, metrics);
-        results.scenarios.push(scenarioResults);
+    // Track limiter events
+    rateLimiter.on('success', (context) => {
+        logger.info('Rate limiter success', { context: context });
+    });
+    rateLimiter.on('error', (error) => {
+        logger.error('Rate limiter error', { error: error.message });
+    });
+    rateLimiter.on('depleted', () => {
+        logger.warn('Rate limiter reservoir depleted - waiting for refresh');
+    });
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
-    }
+    // Run scenarios concurrently
+    const scenarioPromises = scenarios.scenarios.map((scenario, index) => {
+        return rateLimiter.schedule(() => {
+            logger.info(`Queued scenario: ${scenario.name}`, {
+                queuePosition: index + 1,
+                queueLength: scenarios.scenarios.length
+            });
+            return runScenario(scenario, context, logger, metrics);
+        });
+    });
+
+    // Wait for all scenarios to complete
+    const scenarioResults = await Promise.allSettled(scenarioPromises);
     
-    results.completedAt = new Date().toISOString();
+    // Process results
+    results.scenarios = scenarioPromises.map((promise, index) => {
+        const result = scenarioResults[index];
 
-    // Calculate summary
+        if (result.status === 'fulfilled') {
+            return result.value;
+        } else {
+            logger.error('Scenario promise rejected', {
+                scenario: scenarios.scenarios[index].name,
+                error: result.reason?.message
+            });
+            return {
+                scenario: scenarios.scenarios[index].name,
+                success: false,
+                error: result.reason?.message || 'Unknown error',
+                errorCode: result.reason?.code || 'UNKNOWN',
+            };
+        }
+    });
+
+    // Get rate limiter stats
+    const rateLimiterStats = {
+        running: rateLimiter.running(),
+        done: rateLimiter.done(),
+        queued: rateLimiter.queued()
+    };
+    logger.info('Rate limiter stats', rateLimiterStats);
+
+    // Update results
+    results.completedAt = new Date().toISOString();
     results.summary = calculateSummary(results.scenarios);
+    results.rateLimiterStats = rateLimiterStats;
 
     // Write results
     await writeResults(results);
 
-    logger.info('Scenarios runner completed');
+    logger.info('Scenarios runner completed', {
+        summary: results.summary,
+        duration: new Date(results.completedAt) - new Date(results.startedAt)
+    });
+
+    await rateLimiter.disconnect();
+
+    console.log('runId', results.runId);
     return results;
 }
 
@@ -68,7 +146,8 @@ async function runScenario(scenario, baseContext, baseLogger, baseMetrics) {
     // Create child context
     const childContext = {
         ...baseContext,
-        scenarioId: `${baseContext.runId}-${scenario.name}`
+        scenarioId: `${baseContext.runId}-${scenario.name}`,
+        nextRequestId: () => baseContext.nextRequestId()
     };
 
     logger.info(`Running scenario: ${scenario.name}`);
@@ -86,21 +165,33 @@ async function runScenario(scenario, baseContext, baseLogger, baseMetrics) {
 
         // Validate results
 
+        const duration = new Date() - new Date(baseContext.startedAt);
+        logger.info(`Scenario ${scenario.name} completed`, {
+            duration: duration,
+            resultsCount: scenarioResults.stats.resultsCollected,
+            detailsCount: scenarioResults.stats.detailsCollected,
+            errors: scenarioResults.stats.errors
+        });
         return {
             scenario: scenario.name,
             success: true,
+            duration,
             scenarioResults,
             // validationResults,
             errors: scenarioResults.errors
         };
     }
     catch (error) {
-        logger.error(`Scenario ${scenario.name} failed`, { error: error.message });
+        const duration = new Date() - new Date(baseContext.startedAt);
+        logger.error(`Scenario ${scenario.name} failed`, { error: error.message, errorCode: error.code, duration 
+        });
         return {
             scenario: scenario.name,
             success: false,
+            duration,
             error: error.message,
             errorCode: error.code,
+            errorStack: error.stack
         };
     }
 }
@@ -122,17 +213,24 @@ function calculateSummary(scenarios) {
 async function writeResults(results) {
     const resultsPath = getResultsPath(results.runId);
     ensureDir(path.dirname(resultsPath));
-    writeJson(resultsPath, results);
+    writeJsonl(resultsPath, results);
 
     const summaryPath = getSummaryPath(results.runId);
     ensureDir(path.dirname(summaryPath));
-    writeJson(summaryPath, results.summary);
+    writeJsonl(summaryPath, results.summary);
 }
 
 // Main entrypoint
 if (import.meta.url === `file://${process.argv[1]}`) {
     const scenariosPath = process.argv[2] || 'src/test/scenarios.json';
-    runScenarios(scenariosPath).catch(error => {
+    const tempPoweredBottleneckOptions = {
+        maxConcurrent: 15,
+        minTime: 150,
+        reservoir: 15,
+        reservoirRefreshAmount: 10,
+        reservoirRefreshInterval: 6000
+    };
+    runScenarios(scenariosPath, tempPoweredBottleneckOptions).catch(error => {
         console.error('Error:', error.message);
         process.exit(1);
     });
